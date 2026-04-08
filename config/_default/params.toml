@@ -1,10 +1,28 @@
 enableSearch = true
 smartTOC = true
+colorScheme = "github"
+defaultAppearance = "dark"
+enableCodeCopy = true
+
+
+
 
 [homepage]
   layout = "profile"
   showRecent = true
+  showRecentItems = 3
 
 [article]
   showTableOfContents = true
   showTaxonomies = true
+  showViews = true
+
+
+[firebase]
+  apiKey = "AIzaSyCFcqRyQKnkxActYWXnHnJ5zu-jwDF0G9Q"
+  authDomain = "j2234-hugo-blog.firebaseapp.com"
+  projectId = "j2234-hugo-blog"
+  storageBucket = "j2234-hugo-blog.firebasestorage.app"
+  messagingSenderId = "921213028975"
+  appId = "1:921213028975:web:086c82cd724824841e9b9a"
+  measurementId = "G-TEJTZ60WM9"
