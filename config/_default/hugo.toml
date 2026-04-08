@@ -1,5 +1,5 @@
 theme = "blowfish"
-baseURL = "https://blog.j2234.cc"
+baseURL = "https://log.j2234.cc/"
 defaultContentLanguage = "en"
 ignoreFiles = ["_template"]
 
