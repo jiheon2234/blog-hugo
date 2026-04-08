@@ -1,0 +1,12 @@
+.idea
+.DS_Store
+/public/
+/resources/_gen/
+/assets/jsconfig.json
+hugo_stats.json
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.hugo_build.lock

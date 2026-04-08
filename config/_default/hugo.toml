@@ -1,0 +1,12 @@
+theme = "blowfish"
+baseURL = "https://blog.j2234.cc"
+defaultContentLanguage = "en"
+ignoreFiles = ["_template"]
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  series = "series"

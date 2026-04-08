@@ -1,0 +1,10 @@
+enableSearch = true
+smartTOC = true
+
+[homepage]
+  layout = "profile"
+  showRecent = true
+
+[article]
+  showTableOfContents = true
+  showTaxonomies = true
