@@ -1,0 +1,696 @@
+{{/* ── Data ────────────────────────────────────────────── */}}
+{{ $author := .Site.Params.Author }}
+{{ $contentSite := .Site }}
+{{ range .Sites }}{{ if eq .Language.Lang "en" }}{{ $contentSite = . }}{{ end }}{{ end }}
+{{ $posts := where $contentSite.RegularPages "Type" "in" (.Site.Params.mainSections | default (slice "posts")) }}
+{{ $sortedPosts := sort $posts "Date" "desc" }}
+{{ $recentLimit := .Site.Params.homepage.showRecentItems | default 3 }}
+{{ $recent := first $recentLimit $sortedPosts }}
+{{ $oldestPost := index (sort $posts "Date" "asc") 0 }}
+{{ $latestPost := index (first 1 $sortedPosts) 0 }}
+{{ $wordTotal := 0 }}
+{{ range $posts }}{{ $wordTotal = add $wordTotal .WordCount }}{{ end }}
+{{ $wordTotalShort := printf "%d" $wordTotal }}
+{{ if ge $wordTotal 1000 }}
+  {{ $wordTotalShort = printf "%.1fK" (div (float $wordTotal) 1000) }}
+{{ end }}
+{{ $startShort := "" }}{{ with $oldestPost }}{{ $startShort = .Date.Format "2006.01" }}{{ end }}
+{{ $updatedShort := "" }}
+{{ with $latestPost }}
+  {{ $diffSeconds := sub now.Unix .Date.Unix }}
+  {{ $diffDays := div $diffSeconds 86400 }}
+  {{ if lt $diffDays 1 }}
+    {{ $updatedShort = "1d" }}
+  {{ else if lt $diffDays 30 }}
+    {{ $updatedShort = printf "%dd" $diffDays }}
+  {{ else }}
+    {{ $updatedShort = printf "%dmo" (div $diffDays 30) }}
+  {{ end }}
+{{ end }}
+{{ $authorImage := "/android-chrome-512x512.png" }}
+{{ $fallbackThumb := "/android-chrome-512x512.png" }}
+{{ with $author.image }}
+  {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
+    {{ $authorImage = . }}
+  {{ else }}
+    {{ with resources.Get . }}{{ $authorImage = .RelPermalink }}{{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* ── Styles ──────────────────────────────────────────── */}}
+<style>
+.home {
+  --radius: 0.9rem;
+  --border: rgba(var(--color-neutral-700), 0.56);
+  --surface: rgba(var(--color-neutral-900), 0.26);
+  --surface-strong: rgba(var(--color-neutral-900), 0.4);
+  --muted: rgb(var(--color-neutral-400));
+  --text: rgb(var(--color-neutral-50));
+  --accent: rgb(var(--color-primary-300));
+  max-width: 62rem;
+  margin: -4.5rem auto 0;
+  padding: 0 0 4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.home__panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.home__hero {
+  padding: 1.6rem;
+}
+
+.home__hero-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+.home__hero-copy {
+  flex: 1 1 28rem;
+  min-width: min(100%, 18rem);
+  max-width: 37rem;
+}
+
+.home__name {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(2.1rem, 5vw, 3rem);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.home__headline {
+  margin: 0.55rem 0 0;
+  max-width: 32rem;
+  color: rgb(var(--color-neutral-200));
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.home__bio {
+  margin: 0.3rem 0 0;
+  max-width: 32rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.home__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.95rem;
+}
+
+.home__meta-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid rgba(var(--color-neutral-700), 0.44);
+  border-radius: 999px;
+  color: rgb(var(--color-neutral-300));
+  font-size: 0.74rem;
+  line-height: 1;
+  transition: transform 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.home__meta-tag:nth-child(1) {
+  transform: rotate(-4deg);
+}
+
+.home__meta-tag:nth-child(2) {
+  transform: rotate(3deg);
+}
+
+.home__meta-tag:hover {
+  border-color: rgba(var(--color-primary-400), 0.38);
+  color: var(--text);
+}
+
+.home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.05rem;
+}
+
+.home__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: rgb(var(--color-neutral-200)) !important;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.home__btn:hover {
+  transform: translateY(-1px);
+}
+
+.home__btn--primary {
+  background: rgb(var(--color-primary-600));
+  border-color: rgb(var(--color-primary-500));
+  color: white !important;
+}
+
+.home__btn--ghost:hover {
+  border-color: rgba(var(--color-primary-400), 0.45);
+  color: var(--text) !important;
+}
+
+.home__aside {
+  display: grid;
+  gap: 0;
+  justify-items: start;
+  align-content: start;
+  flex: 0 0 12.5rem;
+  width: min(100%, 15.5rem);
+  margin-left: auto;
+}
+
+.home__ribbon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 1.9rem;
+  padding: 0.28rem 0.85rem 0.28rem 0.72rem;
+  border-radius: 0.55rem;
+  border: 1px solid rgba(var(--color-primary-400), 0.42);
+  background: rgba(9, 12, 18, 0.96);
+  color: rgb(var(--color-primary-200));
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  transform: rotate(-3deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  position: absolute;
+  top: -0.35rem;
+  left: -0.45rem;
+  z-index: 2;
+  cursor: pointer;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 94% 0, 100% 100%, 6% 100%);
+}
+
+.home__ribbon::before {
+  content: "//";
+  color: rgb(var(--color-primary-300));
+  font-size: 0.68rem;
+  letter-spacing: 0;
+}
+
+.home__ribbon:hover {
+  transform: rotate(-3deg) translateY(-1px);
+  border-color: rgba(var(--color-primary-300), 0.7);
+  color: white;
+}
+
+.home__avatar-wrap {
+  display: grid;
+  justify-items: center;
+  justify-self: start;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.home__avatar {
+  width: 12.5rem;
+  height: 12.5rem;
+  object-fit: cover;
+  border-radius: 1rem;
+  border: 1px solid rgba(var(--color-neutral-600), 0.5);
+  background: rgb(var(--color-neutral-900));
+}
+
+.home__stats {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.home__stats-card {
+  padding: 1.15rem 1.3rem 1.3rem;
+}
+
+.home__stats-head {
+  display: flex;
+  align-items: center;
+}
+
+.home__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.home__stat {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid rgba(var(--color-neutral-700), 0.28);
+  border-radius: 0.7rem;
+  background: rgba(var(--color-neutral-900), 0.18);
+}
+
+.home__stat-value {
+  color: var(--text);
+  font-size: 1.2rem;
+  line-height: 1.15;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.home__stat-label {
+  color: rgb(var(--color-neutral-500));
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.home__section {
+  margin-top: 1.1rem;
+}
+
+.home__section-card {
+  padding: 1.3rem;
+}
+
+.home__section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.home__section-card--compact {
+  padding-top: 0.95rem;
+}
+
+.home__section-head--compact {
+  align-items: center;
+  margin-bottom: 0.45rem;
+}
+
+.home__label {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.76rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.home__section-title {
+  margin: 0.2rem 0 0;
+  color: var(--text);
+  font-size: 1.45rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.home__section-link {
+  color: rgb(var(--color-neutral-300));
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+.home__section-link:hover {
+  color: var(--text);
+}
+
+.home__areas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(var(--color-neutral-700), 0.36);
+}
+
+.home__area {
+  display: grid;
+  gap: 0.45rem;
+  text-decoration: none !important;
+  color: inherit;
+  padding-right: 1rem;
+}
+
+.home__area + .home__area {
+  padding-left: 1rem;
+  padding-right: 0;
+  border-left: 1px solid rgba(var(--color-neutral-700), 0.36);
+}
+
+.home__area-name {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.7rem;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.home__area-count {
+  color: var(--accent);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.home__area-desc {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.home__recent {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.home__post {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.95rem 0;
+  border-top: 1px solid rgba(var(--color-neutral-700), 0.3);
+  text-decoration: none !important;
+  color: inherit;
+  transition: opacity 180ms ease;
+}
+
+.home__post:hover {
+  opacity: 1;
+}
+
+.home__post:hover .home__post-title {
+  color: var(--accent);
+}
+
+.home__post:first-child {
+  border-top: 0;
+  padding-top: 0.2rem;
+}
+
+.home__post-thumb {
+  width: 5rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(var(--color-neutral-700), 0.32);
+  background: rgba(var(--color-neutral-900), 0.24);
+}
+
+.home__post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.home__post-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.home__post-date {
+  color: rgb(var(--color-neutral-500));
+  font-size: 0.74rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.home__post-main {
+  min-width: 0;
+}
+
+.home__post-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.home__post-summary {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.home__post-meta {
+  color: rgb(var(--color-neutral-500));
+  font-size: 0.74rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+@media (max-width: 920px) {
+  .home__hero-inner {
+    justify-content: center;
+  }
+
+  .home__hero-copy {
+    flex-basis: 20rem;
+  }
+
+  .home__aside {
+    width: 100%;
+    margin-inline: auto;
+    justify-items: center;
+  }
+
+  .home__avatar-wrap {
+    justify-items: center;
+    justify-self: center;
+  }
+
+  .home__ribbon {
+    left: 0.25rem;
+  }
+
+  .home__stats {
+    gap: 0.8rem;
+  }
+
+  .home__stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home {
+    margin-top: -3rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .home__hero,
+  .home__section-card {
+    padding: 1rem;
+  }
+
+  .home__areas {
+    grid-template-columns: 1fr;
+  }
+
+  .home__area + .home__area {
+    padding-left: 0;
+    padding-top: 1rem;
+    border-left: 0;
+    border-top: 1px solid rgba(var(--color-neutral-700), 0.36);
+  }
+
+  .home__post {
+    grid-template-columns: 4.4rem minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .home__post-thumb {
+    width: 4.4rem;
+  }
+
+  .home__post-top {
+    flex-wrap: wrap;
+    gap: 0.3rem 0.55rem;
+  }
+}
+</style>
+
+{{/* ── Markup ─────────────────────────────────────────── */}}
+<section class="home">
+  <section class="home__panel home__hero">
+      <div class="home__hero-inner">
+      <div class="home__hero-copy">
+        <h1 class="home__name">{{ i18n "home_title" (dict "Name" ($author.name | default .Site.Title)) }}</h1>
+        <p class="home__headline">{{ $author.headline | default "This is a simple space for my logs" }}</p>
+        <p class="home__bio">{{ $author.bio | default "Code, thoughts, and whatever." }}</p>
+
+        <div class="home__meta">
+          <span class="home__meta-tag">#DEV</span>
+          <span class="home__meta-tag">#!DEV</span>
+        </div>
+
+        <div class="home__actions">
+          <a href="/posts/" class="home__btn home__btn--primary">{{ i18n "home_browse_posts" }}</a>
+          <a href="/tags/" class="home__btn home__btn--ghost">{{ i18n "home_explore_tags" }}</a>
+        </div>
+      </div>
+
+      <div class="home__aside">
+        <div class="home__avatar-wrap">
+          <button type="button" class="home__ribbon" onclick="alert('not implement')">{{ i18n "home_who_are_you" }}</button>
+          <img src="{{ $authorImage }}" alt="{{ $author.name | default .Site.Title }}" class="home__avatar" loading="lazy" onclick="alert('not implement')">
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="home__section">
+    <div class="home__panel home__stats-card">
+      <div class="home__stats">
+        <div class="home__stats-head">
+          <p class="home__label">{{ i18n "home_blog_stats" }}</p>
+        </div>
+        <div class="home__stats-grid">
+          <div class="home__stat">
+            <span class="home__stat-value">{{ len $posts }}</span>
+            <span class="home__stat-label">{{ i18n "home_stat_posts" }}</span>
+          </div>
+          <div class="home__stat">
+            <span class="home__stat-value">{{ $startShort | default "-" }}</span>
+            <span class="home__stat-label">{{ i18n "home_stat_since" }}</span>
+          </div>
+          <div class="home__stat">
+            <span class="home__stat-value">{{ $updatedShort | default "-" }}</span>
+            <span class="home__stat-label">{{ i18n "home_stat_updated" }}</span>
+          </div>
+          <div class="home__stat">
+            <span class="home__stat-value">{{ $wordTotalShort }}</span>
+            <span class="home__stat-label">{{ i18n "home_stat_words" }}</span>
+          </div>
+          <div class="home__stat">
+            <span class="home__stat-value">{{ len .Site.Taxonomies.tags }}</span>
+            <span class="home__stat-label">{{ i18n "home_stat_tags" }}</span>
+          </div>
+          <div class="home__stat">
+            <span class="home__stat-value" id="home-gc-visitors">-</span>
+            <span class="home__stat-label">{{ i18n "home_stat_visitors" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{ if gt (len $recent) 0 }}
+    <section class="home__section">
+      <div class="home__panel home__section-card home__section-card--compact">
+        <div class="home__section-head home__section-head--compact">
+          <div>
+            <p class="home__label">{{ i18n "home_recent_logs" }}</p>
+          </div>
+          <a href="/posts/" class="home__section-link">{{ i18n "home_view_all" }}</a>
+        </div>
+
+        <div class="home__recent">
+          {{ range $recent }}
+            {{ $page := . }}
+            {{ $thumb := $fallbackThumb }}
+            {{ with $page.Resources.GetMatch "featured*" }}
+              {{ $thumb = .RelPermalink }}
+            {{ end }}
+            {{ if eq $thumb $fallbackThumb }}
+              {{ with $page.Resources.GetMatch "feature*" }}
+                {{ $thumb = .RelPermalink }}
+              {{ end }}
+            {{ end }}
+            {{ if eq $thumb $fallbackThumb }}
+              {{ with $page.Resources.GetMatch "cover*" }}
+                {{ $thumb = .RelPermalink }}
+              {{ end }}
+            {{ end }}
+            {{ if eq $thumb $fallbackThumb }}
+              {{ with $page.Resources.GetMatch "thumb*" }}
+                {{ $thumb = .RelPermalink }}
+              {{ end }}
+            {{ end }}
+            {{ if eq $thumb $fallbackThumb }}
+              {{ with index $page.Params "featureimage" }}
+                {{ if or (strings.HasPrefix . "http:") (strings.HasPrefix . "https:") }}
+                  {{ $thumb = . }}
+                {{ else }}
+                  {{ with $page.Resources.GetMatch . }}
+                    {{ $thumb = .RelPermalink }}
+                  {{ else }}
+                    {{ $thumb = . | relURL }}
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+            {{ if eq $thumb $fallbackThumb }}
+              {{ with index ($page.Resources.ByType "image") 0 }}
+                {{ $thumb = .RelPermalink }}
+              {{ end }}
+            {{ end }}
+            <a href="{{ .RelPermalink }}" class="home__post">
+              <div class="home__post-thumb">
+                <img src="{{ $thumb }}" alt="{{ .Title }}" class="home__post-image" loading="lazy">
+              </div>
+              <div class="home__post-main">
+                <div class="home__post-top">
+                  <span class="home__post-date">{{ .Date.Format "02 Jan 2006" }}</span>
+                  <span class="home__post-meta">{{ i18n "home_reading_min" (dict "Count" .ReadingTime) }}</span>
+                </div>
+                <h3 class="home__post-title">{{ .Title }}</h3>
+                {{ with .Description }}
+                  <p class="home__post-summary">{{ . | plainify | truncate 130 }}</p>
+                {{ else }}
+                  <p class="home__post-summary">{{ .Summary | plainify | truncate 130 }}</p>
+                {{ end }}
+              </div>
+            </a>
+          {{ end }}
+        </div>
+      </div>
+    </section>
+  {{ end }}
+</section>
+<script>
+fetch('https://j2234-blog.goatcounter.com/counter//.json')
+  .then(r => r.json())
+  .then(d => { document.getElementById('home-gc-visitors').textContent = d.count || '-' })
+  .catch(() => {});
+</script>

@@ -10,3 +10,7 @@ ignoreFiles = ["_template"]
   tag = "tags"
   category = "categories"
   series = "series"
+
+
+[pagination]
+  pagerSize = 6

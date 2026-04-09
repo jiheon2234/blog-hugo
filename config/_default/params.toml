@@ -3,26 +3,39 @@ smartTOC = true
 colorScheme = "github"
 defaultAppearance = "dark"
 enableCodeCopy = true
+mainSections = ["posts"]
+highlightCurrentMenuArea = true
 
-
-
+defaultBackgroundImage = "img/background.svg"
 
 [homepage]
-  layout = "profile"
-  showRecent = true
-  showRecentItems = 3
+layout = "custom"
+showRecent = true
+showRecentItems = 3
+showMoreLink = true
+showMoreLinkDest = "/posts/"
+cardView = true
+
+[header]
+layout = "fixed"
+
+[list]
+  heroStyle = "basic"
+  # showSummary = true
+  cardView = true
 
 [article]
-  showTableOfContents = true
-  showTaxonomies = true
-  showViews = true
-
+showHero = true
+heroStyle = "background"
+showTableOfContents = true
+showTaxonomies = true
+showViews = true
 
 [firebase]
-  apiKey = "AIzaSyCFcqRyQKnkxActYWXnHnJ5zu-jwDF0G9Q"
-  authDomain = "j2234-hugo-blog.firebaseapp.com"
-  projectId = "j2234-hugo-blog"
-  storageBucket = "j2234-hugo-blog.firebasestorage.app"
-  messagingSenderId = "921213028975"
-  appId = "1:921213028975:web:086c82cd724824841e9b9a"
-  measurementId = "G-TEJTZ60WM9"
+apiKey = "AIzaSyCFcqRyQKnkxActYWXnHnJ5zu-jwDF0G9Q"
+authDomain = "j2234-hugo-blog.firebaseapp.com"
+projectId = "j2234-hugo-blog"
+storageBucket = "j2234-hugo-blog.firebasestorage.app"
+messagingSenderId = "921213028975"
+appId = "1:921213028975:web:086c82cd724824841e9b9a"
+measurementId = "G-TEJTZ60WM9"
