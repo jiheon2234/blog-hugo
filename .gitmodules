@@ -5,3 +5,4 @@
 [submodule "content"]
 	path = content
 	url = https://github.com/jiheon2234/blog-content.git
+	branch = main
