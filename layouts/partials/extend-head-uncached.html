@@ -1,0 +1,85 @@
+{{- if and (.Params.showComments | default (site.Params.article.showComments | default false)) site.Params.waline.serverURL -}}
+  <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+  <style>
+    #waline {
+      --waline-font-size: 0.95rem;
+      --waline-theme-color: rgb(var(--color-primary-500));
+      --waline-active-color: rgb(var(--color-primary-400));
+      --waline-color: rgb(var(--color-neutral-700));
+      --waline-bg-color: rgba(var(--color-neutral), 0.72);
+      --waline-bg-color-light: rgba(var(--color-neutral-50), 0.76);
+      --waline-bg-color-hover: rgba(var(--color-primary-50), 0.72);
+      --waline-border-color: rgba(var(--color-neutral-300), 0.72);
+      --waline-info-bg-color: rgba(var(--color-neutral-50), 0.72);
+      --waline-info-color: rgb(var(--color-neutral-500));
+      --waline-bq-color: rgba(var(--color-neutral-100), 0.74);
+      --waline-code-bg-color: rgba(var(--color-neutral-100), 0.9);
+      --waline-border: 1px solid var(--waline-border-color);
+      --waline-box-shadow: 0 18px 60px rgba(var(--color-neutral-900), 0.08);
+      --waline-avatar-radius: 0.9rem;
+    }
+
+    html.dark #waline {
+      --waline-color: rgb(var(--color-neutral-200));
+      --waline-bg-color: rgba(var(--color-neutral-900), 0.52);
+      --waline-bg-color-light: rgba(var(--color-neutral-800), 0.56);
+      --waline-bg-color-hover: rgba(var(--color-primary-900), 0.18);
+      --waline-border-color: rgba(var(--color-neutral-600), 0.52);
+      --waline-info-bg-color: rgba(var(--color-neutral-800), 0.54);
+      --waline-info-color: rgb(var(--color-neutral-400));
+      --waline-bq-color: rgba(var(--color-neutral-800), 0.76);
+      --waline-code-bg-color: rgba(var(--color-neutral-900), 0.82);
+      --waline-box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    }
+
+    #waline .wl-panel,
+    #waline .wl-card {
+      border-radius: 1.1rem;
+      backdrop-filter: blur(18px);
+    }
+
+    #waline .wl-editor {
+      min-height: 8rem;
+    }
+
+    #waline .wl-btn {
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    #waline .wl-header .wl-header-item:first-child {
+      position: relative;
+    }
+
+    #waline .wl-header .wl-header-item:first-child::after {
+      content: "*";
+      position: absolute;
+      left: 2.45rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #f85149;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    #waline .wl-panel {
+      position: relative;
+      z-index: 2;
+    }
+
+    #waline .wl-panel .wl-actions,
+    #waline .wl-panel .wl-action {
+      position: relative;
+      z-index: 10;
+    }
+
+    #waline .wl-panel :is(.wl-gif, .wl-emoji, .wl-gif-popup, .wl-emoji-popup, .wl-gif-panel, .wl-emoji-panel) {
+      z-index: 1000;
+    }
+
+    #waline .wl-cards {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+{{- end -}}

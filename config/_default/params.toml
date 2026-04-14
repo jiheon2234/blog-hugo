@@ -30,6 +30,10 @@ heroStyle = "background"
 showTableOfContents = true
 showTaxonomies = true
 showViews = true
+showComments = true
+
+[waline]
+serverURL = "https://log-comment.j2234.cc"
 
 [firebase]
 apiKey = "AIzaSyCFcqRyQKnkxActYWXnHnJ5zu-jwDF0G9Q"

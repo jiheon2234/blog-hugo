@@ -1,0 +1,43 @@
+{{- $serverURL := site.Params.waline.serverURL | default "" -}}
+{{- $lang := site.Language.Lang | default "en" -}}
+{{- $supportedLangs := slice "zh" "zh-CN" "zh-TW" "en" "en-US" "jp" "jp-JP" "pt-BR" "ru" "ru-RU" "fr" "fr-FR" "vi" "vi-vn" "es" "es-MX" -}}
+{{- if not (in $supportedLangs $lang) -}}
+  {{- $lang = "en" -}}
+{{- end -}}
+
+{{- if $serverURL -}}
+  <div id="waline" class="pt-6"></div>
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v3/dist/waline.js';
+
+    init({
+      el: '#waline',
+      serverURL: {{ $serverURL | jsonify | safeJS }},
+      path: {{ .RelPermalink | jsonify | safeJS }},
+      lang: {{ $lang | jsonify | safeJS }},
+      dark: 'html.dark',
+      login: 'disable',
+      noCopyright: true,
+      noRss: true,
+      meta: ['nick', 'mail'],
+      // requiredMeta: ['nick'],
+      locale: {
+        nick: 'nick',
+        mail: 'email',
+        optional : '?'
+      },
+      emoji: [
+    // 'https://gcore.jsdelivr.net/gh/walinejs/emojis@1.0.0/qq',
+    // 'https://gcore.jsdelivr.net/gh/walinejs/emojis@1.0.0/tieba',
+    'https://unpkg.com/@waline/emojis@1.4.0/tw-emoji',
+    'https://unpkg.com/@waline/emojis@1.4.0/hoyoverse-hi3',
+  ],
+      imageUploader: false,
+      
+    });
+
+
+  </script>
+{{- else -}}
+  {{- warnf "[WALINE] site.Params.waline.serverURL is required for comments." -}}
+{{- end -}}
