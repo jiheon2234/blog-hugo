@@ -1,2 +1,81 @@
 <script data-goatcounter="https://j2234-blog.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+
+<style>
+  .article-content > details {
+    margin: 1.5rem 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(var(--color-primary-400), 0.22);
+    border-radius: 0.75rem;
+    background: rgba(var(--color-primary-500), 0.1);
+    box-shadow: 0 10px 28px rgba(var(--color-primary-900), 0.08);
+  }
+
+  .article-content > details[open] {
+    padding: 0 1rem 1rem;
+  }
+
+  .article-content > details > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0.78rem 1rem;
+    border-bottom: 0;
+    cursor: pointer;
+    color: rgb(var(--color-neutral));
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    list-style: none;
+    background: rgba(var(--color-primary-500), 0.08);
+  }
+
+  .article-content > details[open] > summary {
+    margin: 0 -1rem 1rem;
+    border-bottom: 1px solid rgba(var(--color-primary-400), 0.2);
+    background: rgba(var(--color-primary-500), 0.12);
+  }
+
+  .article-content > details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .article-content > details > summary::before {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 0.1rem;
+    border-top: 0.42rem solid transparent;
+    border-bottom: 0.42rem solid transparent;
+    border-left: 0.62rem solid rgb(var(--color-neutral));
+    border-radius: 999px;
+    transition: transform 160ms ease;
+  }
+
+  .article-content > details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+
+  html.dark .article-content > details {
+    border-color: rgba(var(--color-primary-400), 0.22);
+    background: rgba(var(--color-primary-500), 0.16);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+  }
+
+  html.dark .article-content > details > summary {
+    color: rgb(var(--color-neutral));
+    background: rgba(var(--color-primary-500), 0.1);
+  }
+
+  html.dark .article-content > details[open] > summary {
+    border-bottom-color: rgba(var(--color-primary-400), 0.22);
+    background: rgba(var(--color-primary-500), 0.16);
+  }
+
+  html.dark .article-content > details > summary::before {
+    border-left-color: rgb(var(--color-neutral));
+  }
+</style>

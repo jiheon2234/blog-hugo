@@ -4,6 +4,11 @@
 {{- if not (in $supportedLangs $lang) -}}
   {{- $lang = "en" -}}
 {{- end -}}
+{{- $commentKey := .Params.translationKey | default .Slug -}}
+{{- if not $commentKey -}}
+  {{- $commentKey = path.Base (strings.TrimSuffix "/" .RelPermalink) -}}
+{{- end -}}
+{{- $commentPath := printf "/posts/%s/" $commentKey -}}
 
 {{- if $serverURL -}}
   <div id="waline" class="pt-6"></div>
@@ -13,7 +18,7 @@
     init({
       el: '#waline',
       serverURL: {{ $serverURL | jsonify | safeJS }},
-      path: {{ .RelPermalink | jsonify | safeJS }},
+      path: {{ $commentPath | jsonify | safeJS }},
       lang: {{ $lang | jsonify | safeJS }},
       dark: 'html.dark',
       login: 'disable',

@@ -11,7 +11,7 @@ defaultBackgroundImage = "img/background.svg"
 [homepage]
 layout = "custom"
 showRecent = true
-showRecentItems = 3
+showRecentItems = 4
 showMoreLink = true
 showMoreLinkDest = "/posts/"
 cardView = true
@@ -23,6 +23,10 @@ layout = "fixed"
   heroStyle = "basic"
   # showSummary = true
   cardView = true
+
+[term]
+  cardView = true
+  cardViewScreenWidth = false
 
 [article]
 showHero = true

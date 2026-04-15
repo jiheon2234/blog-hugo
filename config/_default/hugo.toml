@@ -1,6 +1,10 @@
 theme = "blowfish"
+title = "J2234's Log"
 baseURL = "https://log.j2234.cc/"
-defaultContentLanguage = "en"
+languageCode = "ko-KR"
+
+
+defaultContentLanguage = "ko"
 ignoreFiles = ["_template"]
 
 [outputs]
@@ -11,6 +15,12 @@ ignoreFiles = ["_template"]
   category = "categories"
   series = "series"
 
+[permalinks]
+  posts = "/posts/:slug/"
 
 [pagination]
   pagerSize = 6
+
+
+[params]
+  images = ["og-main.webp"]

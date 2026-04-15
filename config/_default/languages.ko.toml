@@ -1,19 +1,23 @@
+locale = "ko"
+label = "korean"
+
 disabled = false
 languageCode = "ko"
 languageName = "한국어"
 weight = 2
 contentDir = "content"
+title = "J2234's log"
 
 [params]
   displayName = "KO"
   isoCode = "ko"
   rtl = false
   dateFormat = "2006년 1월 2일"
-  description = "j2234의 백엔드, 클라우드, 문제 해결 노트."
+  description = "j2234의 개인 로그 저장소입니다"
 
 [params.author]
   name = "J2234"
-  headline = "간단한 저만의 기록 저장소입니다"
+  headline = "이곳은 저만의 간단한 로그 저장소입니다"
   bio = "공부했던 것들, 또는 그냥 남기고 싶은 것들을 기록하고 있습니다"
   links = [
     { github = "https://github.com/jiheon2234" },

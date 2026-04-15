@@ -1,3 +1,6 @@
+locale = "en"
+label = "English"
+
 disabled = false
 languageCode = "en"
 languageName = "English"
@@ -10,7 +13,7 @@ title = "J2234's log"
   isoCode = "en"
   rtl = false
   dateFormat = "2 January 2006"
-  description = "Backend, cloud, and problem-solving notes by j2234."
+  description = "j2234's personal log storage"
   # logo = "img/logo.png"
   # secondaryLogo = "img/secondary-logo.png"
   # description = "My awesome website"

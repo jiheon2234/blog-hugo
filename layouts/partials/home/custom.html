@@ -1,11 +1,15 @@
 {{/* ── Data ────────────────────────────────────────────── */}}
 {{ $author := .Site.Params.Author }}
 {{ $contentSite := .Site }}
-{{ range .Sites }}{{ if eq .Language.Lang "en" }}{{ $contentSite = . }}{{ end }}{{ end }}
+{{ range .Sites }}{{ if eq .Language.Lang "ko" }}{{ $contentSite = . }}{{ end }}{{ end }}
 {{ $posts := where $contentSite.RegularPages "Type" "in" (.Site.Params.mainSections | default (slice "posts")) }}
 {{ $sortedPosts := sort $posts "Date" "desc" }}
 {{ $recentLimit := .Site.Params.homepage.showRecentItems | default 3 }}
 {{ $recent := first $recentLimit $sortedPosts }}
+{{ $devCount := 0 }}
+{{ $noDevCount := 0 }}
+{{ with index $contentSite.Taxonomies.categories "dev" }}{{ $devCount = len .Pages }}{{ end }}
+{{ with index $contentSite.Taxonomies.categories "no-dev" }}{{ $noDevCount = len .Pages }}{{ end }}
 {{ $oldestPost := index (sort $posts "Date" "asc") 0 }}
 {{ $latestPost := index (first 1 $sortedPosts) 0 }}
 {{ $wordTotal := 0 }}
@@ -41,17 +45,32 @@
 <style>
 .home {
   --radius: 0.9rem;
-  --border: rgba(var(--color-neutral-700), 0.56);
-  --surface: rgba(var(--color-neutral-900), 0.26);
-  --surface-strong: rgba(var(--color-neutral-900), 0.4);
-  --muted: rgb(var(--color-neutral-400));
-  --text: rgb(var(--color-neutral-50));
-  --accent: rgb(var(--color-primary-300));
+  --border: rgba(var(--color-neutral-300), 0.82);
+  --surface: rgba(var(--color-neutral-50), 0.72);
+  --surface-strong: rgba(var(--color-neutral), 0.86);
+  --item-surface: rgba(var(--color-neutral-100), 0.62);
+  --thumb-surface: rgba(var(--color-neutral-100), 0.72);
+  --muted: rgb(var(--color-neutral-600));
+  --soft: rgb(var(--color-neutral-500));
+  --text: rgb(var(--color-neutral-900));
+  --accent: rgb(var(--color-primary-600));
   max-width: 62rem;
   margin: -4.5rem auto 0;
   padding: 0 0 4rem;
   position: relative;
   z-index: 1;
+}
+
+.dark .home {
+  --border: rgba(var(--color-neutral-700), 0.56);
+  --surface: rgba(var(--color-neutral-900), 0.26);
+  --surface-strong: rgba(var(--color-neutral-900), 0.4);
+  --item-surface: rgba(var(--color-neutral-900), 0.18);
+  --thumb-surface: rgba(var(--color-neutral-900), 0.24);
+  --muted: rgb(var(--color-neutral-400));
+  --soft: rgb(var(--color-neutral-500));
+  --text: rgb(var(--color-neutral-50));
+  --accent: rgb(var(--color-primary-300));
 }
 
 .home__panel {
@@ -91,7 +110,7 @@
 .home__headline {
   margin: 0.55rem 0 0;
   max-width: 32rem;
-  color: rgb(var(--color-neutral-200));
+  color: var(--text);
   font-size: 1.05rem;
   line-height: 1.6;
 }
@@ -104,75 +123,64 @@
   line-height: 1.7;
 }
 
-.home__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.95rem;
-}
-
-.home__meta-tag {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.8rem;
-  padding: 0.2rem 0.65rem;
-  border: 1px solid rgba(var(--color-neutral-700), 0.44);
-  border-radius: 999px;
-  color: rgb(var(--color-neutral-300));
-  font-size: 0.74rem;
-  line-height: 1;
-  transition: transform 180ms ease, border-color 180ms ease, color 180ms ease;
-}
-
-.home__meta-tag:nth-child(1) {
-  transform: rotate(-4deg);
-}
-
-.home__meta-tag:nth-child(2) {
-  transform: rotate(3deg);
-}
-
-.home__meta-tag:hover {
-  border-color: rgba(var(--color-primary-400), 0.38);
-  color: var(--text);
-}
-
-.home__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+.home__category-switch {
+  display: grid;
+  gap: 0.2rem;
+  width: min(100%, 19rem);
   margin-top: 1.05rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid rgba(var(--color-primary-400), 0.42);
 }
 
-.home__btn {
-  display: inline-flex;
+.home__category-card {
+  position: relative;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.55rem 0.95rem;
-  border-radius: 0.55rem;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: rgb(var(--color-neutral-200)) !important;
-  font-size: 0.88rem;
-  font-weight: 600;
-  text-decoration: none !important;
-  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease, transform 180ms ease;
-}
-
-.home__btn:hover {
-  transform: translateY(-1px);
-}
-
-.home__btn--primary {
-  background: rgb(var(--color-primary-600));
-  border-color: rgb(var(--color-primary-500));
-  color: white !important;
-}
-
-.home__btn--ghost:hover {
-  border-color: rgba(var(--color-primary-400), 0.45);
+  justify-content: space-between;
+  gap: 0.8rem;
+  min-height: 1.9rem;
+  padding: 0.25rem 0;
   color: var(--text) !important;
+  text-decoration: none !important;
+  background: transparent;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+.home__category-card:hover {
+  transform: translateX(2px);
+  color: var(--accent) !important;
+}
+
+.home__category-card--quiet {
+  background: transparent;
+}
+
+.home__category-name {
+  flex: 1 1 auto;
+  color: inherit;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.home__category-card:hover .home__category-name {
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--color-primary-300), 0.7);
+  text-underline-offset: 0.25rem;
+}
+
+.home__category-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0;
+  color: var(--soft);
+  background: transparent;
+  font-size: 0.72rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .home__aside {
@@ -240,6 +248,12 @@
   border-radius: 1rem;
   border: 1px solid rgba(var(--color-neutral-600), 0.5);
   background: rgb(var(--color-neutral-900));
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.home__avatar-wrap:hover .home__avatar {
+  transform: translate(0.18rem, -0.18rem) rotate(1.2deg);
+  box-shadow: -0.45rem 0.45rem 0 rgba(var(--color-primary-500), 0.18);
 }
 
 .home__stats {
@@ -266,9 +280,24 @@
   display: grid;
   gap: 0.1rem;
   padding: 0.75rem 0.8rem;
-  border: 1px solid rgba(var(--color-neutral-700), 0.28);
+  border: 1px solid var(--border);
   border-radius: 0.7rem;
-  background: rgba(var(--color-neutral-900), 0.18);
+  background: var(--item-surface);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.home__stat:hover {
+  transform: translate(0.12rem, -0.12rem);
+  border-color: rgba(var(--color-primary-400), 0.42);
+  box-shadow: -0.28rem 0.28rem 0 rgba(var(--color-primary-500), 0.12);
+}
+
+.home__stat:hover .home__stat-label {
+  color: rgb(var(--color-primary-600)) !important;
+}
+
+.dark .home__stat:hover .home__stat-label {
+  color: rgb(var(--color-primary-300)) !important;
 }
 
 .home__stat-value {
@@ -280,11 +309,12 @@
 }
 
 .home__stat-label {
-  color: rgb(var(--color-neutral-500));
+  color: var(--soft);
   font-size: 0.7rem;
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  transition: color 180ms ease;
 }
 
 .home__section {
@@ -297,7 +327,7 @@
 
 .home__section-head {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.8rem;
@@ -309,17 +339,18 @@
 
 .home__section-head--compact {
   align-items: center;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .home__label {
   margin: 0;
-  color: var(--accent);
-  font-size: 0.76rem;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 700;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  font-weight: 600;
 }
 
 .home__section-title {
@@ -331,14 +362,30 @@
 }
 
 .home__section-link {
-  color: rgb(var(--color-neutral-300));
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  justify-self: end;
+  padding: 0.22rem 0.48rem;
+  border: 1px solid var(--border);
+  border-radius: 999rem;
+  color: var(--muted) !important;
+  background: var(--item-surface);
+  font-size: 0.78rem;
   font-weight: 600;
   text-decoration: none !important;
+  transition: color 180ms ease, transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
 }
 
 .home__section-link:hover {
-  color: var(--text);
+  transform: translateX(2px);
+  border-color: rgba(var(--color-primary-400), 0.42);
+  background: rgba(var(--color-primary-600), 0.08);
+  color: var(--accent) !important;
+}
+
+.home__section-link-arrow {
+  color: var(--accent);
 }
 
 .home__areas {
@@ -389,7 +436,7 @@
 
 .home__recent {
   display: grid;
-  gap: 0.7rem;
+  gap: 0;
 }
 
 .home__post {
@@ -397,23 +444,30 @@
   grid-template-columns: 5rem minmax(0, 1fr);
   gap: 0.9rem;
   align-items: start;
-  padding: 0.95rem 0;
-  border-top: 1px solid rgba(var(--color-neutral-700), 0.3);
+  padding: 0.85rem 0.55rem;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0.65rem;
   text-decoration: none !important;
   color: inherit;
-  transition: opacity 180ms ease;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
 }
 
 .home__post:hover {
-  opacity: 1;
+  transform: translateX(0.18rem);
+  background: rgba(var(--color-primary-600), 0.06);
+  border-color: rgba(var(--color-primary-400), 0.32);
 }
 
 .home__post:hover .home__post-title {
   color: var(--accent);
 }
 
+.home__post:hover .home__post-thumb {
+  border-color: rgba(var(--color-primary-400), 0.48);
+  transform: translateY(-0.08rem);
+}
+
 .home__post:first-child {
-  border-top: 0;
   padding-top: 0.2rem;
 }
 
@@ -422,15 +476,18 @@
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 0.8rem;
-  border: 1px solid rgba(var(--color-neutral-700), 0.32);
-  background: rgba(var(--color-neutral-900), 0.24);
+  border: 1px solid var(--border);
+  background: var(--thumb-surface);
+  padding: 0.25rem;
+  transition: transform 180ms ease, border-color 180ms ease;
 }
 
 .home__post-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  border-radius: 0.6rem;
 }
 
 .home__post-top {
@@ -438,12 +495,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .home__post-date {
-  color: rgb(var(--color-neutral-500));
-  font-size: 0.74rem;
+  color: var(--soft);
+  font-size: 0.7rem;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -458,6 +515,15 @@
   font-size: 1.05rem;
   line-height: 1.3;
   font-weight: 700;
+  min-width: 0;
+  transition: color 180ms ease;
+}
+
+.home__post-title-row {
+  display: inline-flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.5rem;
 }
 
 .home__post-summary {
@@ -472,8 +538,18 @@
 }
 
 .home__post-meta {
-  color: rgb(var(--color-neutral-500));
-  font-size: 0.74rem;
+  color: var(--soft);
+  font-size: 0.7rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.home__post-meta-group {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--soft);
+  font-size: 0.7rem;
   line-height: 1.2;
   white-space: nowrap;
 }
@@ -526,6 +602,10 @@
     grid-template-columns: 1fr;
   }
 
+  .home__category-switch {
+    grid-template-columns: 1fr;
+  }
+
   .home__area + .home__area {
     padding-left: 0;
     padding-top: 1rem;
@@ -558,21 +638,23 @@
         <p class="home__headline">{{ $author.headline | default "This is a simple space for my logs" }}</p>
         <p class="home__bio">{{ $author.bio | default "Code, thoughts, and whatever." }}</p>
 
-        <div class="home__meta">
-          <span class="home__meta-tag">#DEV</span>
-          <span class="home__meta-tag">#!DEV</span>
+        <div class="home__category-switch" aria-label="Blog categories">
+          <a href="/categories/dev/" class="home__category-card">
+            <span class="home__category-name">DEV Log</span>
+            <span class="home__category-count">{{ $devCount }} posts</span>
+          </a>
+          <a href="/categories/no-dev/" class="home__category-card home__category-card--quiet">
+            <span class="home__category-name">General Log</span>
+            <span class="home__category-count">{{ $noDevCount }} posts</span>
+          </a>
         </div>
 
-        <div class="home__actions">
-          <a href="/posts/" class="home__btn home__btn--primary">{{ i18n "home_browse_posts" }}</a>
-          <a href="/tags/" class="home__btn home__btn--ghost">{{ i18n "home_explore_tags" }}</a>
-        </div>
       </div>
 
       <div class="home__aside">
         <div class="home__avatar-wrap">
           <button type="button" class="home__ribbon" onclick="alert('not implement')">{{ i18n "home_who_are_you" }}</button>
-          <img src="{{ $authorImage }}" alt="{{ $author.name | default .Site.Title }}" class="home__avatar" loading="lazy" onclick="alert('not implement')">
+          <img src="{{ $authorImage }}" alt="{{ $author.name | default .Site.Title }}" class="home__avatar nozoom" loading="lazy" onclick="alert('not implement')">
         </div>
       </div>
     </div>
@@ -603,7 +685,7 @@
             <span class="home__stat-label">{{ i18n "home_stat_words" }}</span>
           </div>
           <div class="home__stat">
-            <span class="home__stat-value">{{ len .Site.Taxonomies.tags }}</span>
+            <span class="home__stat-value">{{ len $contentSite.Taxonomies.tags }}</span>
             <span class="home__stat-label">{{ i18n "home_stat_tags" }}</span>
           </div>
           <div class="home__stat">
@@ -620,9 +702,9 @@
       <div class="home__panel home__section-card home__section-card--compact">
         <div class="home__section-head home__section-head--compact">
           <div>
-            <p class="home__label">{{ i18n "home_recent_logs" }}</p>
+            <p class="home__label">Recent</p>
           </div>
-          <a href="/posts/" class="home__section-link">{{ i18n "home_view_all" }}</a>
+          <a href="/posts/" class="home__section-link">{{ i18n "home_view_all" }} <span class="home__section-link-arrow">→</span></a>
         </div>
 
         <div class="home__recent">
@@ -667,14 +749,18 @@
             {{ end }}
             <a href="{{ .RelPermalink }}" class="home__post">
               <div class="home__post-thumb">
-                <img src="{{ $thumb }}" alt="{{ .Title }}" class="home__post-image" loading="lazy">
+                <img src="{{ $thumb }}" alt="{{ .Title }}" class="home__post-image nozoom" loading="lazy">
               </div>
               <div class="home__post-main">
                 <div class="home__post-top">
+                  <span class="home__post-title-row">
+                    <h3 class="home__post-title">{{ .Title }}</h3>
+                  <span class="home__post-meta-group">
                   <span class="home__post-date">{{ .Date.Format "02 Jan 2006" }}</span>
+                  </span>
+                  </span>
                   <span class="home__post-meta">{{ i18n "home_reading_min" (dict "Count" .ReadingTime) }}</span>
                 </div>
-                <h3 class="home__post-title">{{ .Title }}</h3>
                 {{ with .Description }}
                   <p class="home__post-summary">{{ . | plainify | truncate 130 }}</p>
                 {{ else }}
