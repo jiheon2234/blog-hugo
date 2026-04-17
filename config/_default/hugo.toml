@@ -3,7 +3,7 @@ title = "J2234's Log"
 baseURL = "https://log.j2234.cc/"
 languageCode = "ko-KR"
 
-
+enableRobotsTXT = true
 defaultContentLanguage = "ko"
 ignoreFiles = ["_template"]
 

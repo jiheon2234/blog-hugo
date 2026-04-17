@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+search: yes
+ai-input: yes
+ai-train: yes
+
+Sitemap: {{ "sitemap.xml" | absURL }}
+
