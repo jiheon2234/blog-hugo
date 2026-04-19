@@ -2,7 +2,7 @@ enableSearch = true
 smartTOC = true
 colorScheme = "github"
 defaultAppearance = "dark"
-enableCodeCopy = true
+# enableCodeCopy = true
 mainSections = ["posts"]
 highlightCurrentMenuArea = true
 
@@ -29,12 +29,13 @@ layout = "fixed"
   cardViewScreenWidth = false
 
 [article]
-showHero = true
-heroStyle = "background"
+# showHero = true
+# heroStyle = "big" #background
 showTableOfContents = true
 showTaxonomies = true
 showViews = true
 showComments = true
+showAuthor = false
 
 [waline]
 serverURL = "https://log-comment.j2234.cc"
