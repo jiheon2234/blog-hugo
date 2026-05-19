@@ -95,3 +95,17 @@
     }
   </style>
 {{- end -}}
+
+
+{{- if .IsPage -}}
+  {{- $raw := .RawContent -}}
+
+  {{- range .Resources.Match "*.js" -}}
+    {{- $name := .Name -}}
+    {{- $base := path.Base .Name -}}
+
+    {{- if not (or (in $raw $name) (in $raw $base)) -}}
+      <script defer src="{{ .RelPermalink }}"></script>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
